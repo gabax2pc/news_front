@@ -1,0 +1,39 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+  customHeaders:
+    - pattern: '**/*.js'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.css'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate'
+    - pattern: '**/*.json'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=86400'
+  environment:
+    variables:
+      # 本番環境用の環境変数（Amplifyコンソールで設定）
+      REACT_APP_ENV: production
+      # APIエンドポイントはAmplifyコンソールで設定
+      # REACT_APP_API_BASE_URL: https://api.example.com 

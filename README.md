@@ -77,6 +77,76 @@ FastAPI + Meilisearchを使用したバックエンドAPIと連携する、モ�
 npm run build
 ```
 
+## デプロイ
+
+### AWS Amplifyへのデプロイ
+
+このプロジェクトはAWS AmplifyでのCI/CDデプロイに対応しています。
+
+#### 1. Amplifyアプリの作成
+
+1. [AWS Amplifyコンソール](https://console.aws.amazon.com/amplify/)にアクセス
+2. 「新しいアプリをホスト」→「GitHubから開始」を選択
+3. このリポジトリ（`gabax2pc/news_front`）を選択
+4. ブランチ（`main`）を選択
+
+#### 2. ビルド設定
+
+Amplifyは自動的に`amplify.yml`を検出してビルド設定を適用します。
+手動で設定する場合は以下の設定を使用：
+
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+#### 3. 環境変数の設定
+
+Amplifyコンソールで以下の環境変数を設定：
+
+| 変数名 | 値（例） | 説明 |
+|--------|----------|------|
+| `REACT_APP_API_BASE_URL` | `https://api.example.com` | バックエンドAPIのURL |
+| `REACT_APP_ENV` | `production` | 環境識別子 |
+| `REACT_APP_SITE_URL` | `https://your-app.amplifyapp.com` | サイトURL |
+
+#### 4. カスタムドメインの設定（オプション）
+
+1. Amplifyコンソールで「ドメイン管理」を選択
+2. カスタムドメインを追加
+3. DNS設定を更新
+
+#### 5. デプロイの確認
+
+- プッシュ時の自動デプロイ
+- プルリクエスト時のプレビュー環境
+- ビルドログの確認
+
+### 手動デプロイ
+
+静的ホスティングサービスへの手動デプロイ：
+
+```bash
+# ビルド
+npm run build
+
+# buildディレクトリの内容をホスティングサービスにアップロード
+```
+
 ## API仕様
 
 このフロントエンドは以下のAPIエンドポイントを使用します：
@@ -148,6 +218,11 @@ src/
 3. **TypeScriptエラー**
    - 型定義が最新であることを確認
    - `npm run build` でビルドエラーをチェック
+
+4. **Amplifyデプロイエラー**
+   - 環境変数が正しく設定されていることを確認
+   - ビルドログでエラーの詳細を確認
+   - `amplify.yml` の設定を確認
 
 ## ライセンス
 
